@@ -1,23 +1,20 @@
-package com.example.espainour.model;
+package com.example.espainour.dto;
 
-import jakarta.persistence.*;
+import com.example.espainour.model.EstatusLegal;
+import jakarta.validation.constraints.*;
 
-@Entity
-@Table(name = "refugiados")
-@PrimaryKeyJoinColumn(name = "id")
-public class Refugiado extends Usuario {
+public class RefugiadoDTO {
 
-    @Column(nullable = false, unique = true)
+    @NotNull(message = "Número de refugiado es obligatorio")
     private Long refugiadoNumero;
 
-    @Column
+    @NotBlank(message = "Nacionalidad es obligatoria")
     private String nacionalidad;
 
-    @Column
+    @NotBlank(message = "Idioma es obligatorio")
     private String idioma;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estatus_legal", nullable = false)
+    @NotNull(message = "Estatus legal es obligatorio")
     private EstatusLegal estatusLegal;
 
     // --- Getter & Setter ---
@@ -53,6 +50,4 @@ public class Refugiado extends Usuario {
     public void setEstatusLegal(EstatusLegal estatusLegal) {
         this.estatusLegal = estatusLegal;
     }
-
-    public Refugiado() {}
 }

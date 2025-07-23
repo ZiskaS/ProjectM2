@@ -77,4 +77,6 @@ public class Voluntario extends Usuario {
     public void setAreasInteres(AreaInteres areasInteres) {
         this.areasInteres = areasInteres;
     }
+
+    public Voluntario() {}
 }
