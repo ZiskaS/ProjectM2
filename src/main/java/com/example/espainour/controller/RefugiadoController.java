@@ -1,15 +1,12 @@
 package com.example.espainour.controller;
 
-import com.example.espainour.dto.RefugiadoDTO;
 import com.example.espainour.model.Refugiado;
 import com.example.espainour.service.RefugiadoService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/refugiados")
@@ -17,41 +14,55 @@ public class RefugiadoController {
 
     private final RefugiadoService refugiadoService;
 
-    @Autowired
     public RefugiadoController(RefugiadoService refugiadoService) {
         this.refugiadoService = refugiadoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<RefugiadoDTO>> getAllRefugiados() {
-        List<Refugiado> list = refugiadoService.findAll();
-        List<RefugiadoDTO> dtos = list.stream().map(this::toDTO).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public List<Refugiado> getAllRefugiados() {
+        return refugiadoService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RefugiadoDTO> getRefugiadoById(@PathVariable Long id) {
-        return refugiadoService.findById(id)
-                .map(ref -> ResponseEntity.ok(toDTO(ref)))
+    public ResponseEntity<Refugiado> getRefugiadoById(@PathVariable Long id) {
+        Optional<Refugiado> opt = refugiadoService.findById(id);
+        return opt.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<RefugiadoDTO> createRefugiado(@Valid @RequestBody RefugiadoDTO dto) {
-        Refugiado ref = toEntity(dto);
-        Refugiado saved = refugiadoService.crearRefugiado(ref);
-        return ResponseEntity.ok(toDTO(saved));
+    public ResponseEntity<Refugiado> createRefugiado(@RequestBody Refugiado refugiado) {
+        Refugiado saved = refugiadoService.crearRefugiado(refugiado);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RefugiadoDTO> updateRefugiado(@PathVariable Long id, @Valid @RequestBody RefugiadoDTO dto) {
-        return refugiadoService.findById(id).map(existing -> {
-            existing.setNacionalidad(dto.getNacionalidad());
-            existing.setIdioma(dto.getIdioma());
-            existing.setEstatusLegal(dto.getEstatusLegal());
-            Refugiado updated = refugiadoService.crearRefugiado(existing);
-            return ResponseEntity.ok(toDTO(updated));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Refugiado> updateRefugiado(@PathVariable Long id, @RequestBody Refugiado refugiadoDetails) {
+        Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
+        if (optionalExisting.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Refugiado existing = optionalExisting.get();
+
+        // No permitimos cambiar refugiadoNumero
+        if (refugiadoDetails.getRefugiadoNumero() != null &&
+                !existing.getRefugiadoNumero().equals(refugiadoDetails.getRefugiadoNumero())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Actualizamos todos los campos permitidos excepto genero y refugiadoNumero
+        existing.setNombre(refugiadoDetails.getNombre());
+        existing.setApellidos(refugiadoDetails.getApellidos());
+        existing.setEmail(refugiadoDetails.getEmail());
+        existing.setTelefono(refugiadoDetails.getTelefono());
+        existing.setDocumentoIdentidad(refugiadoDetails.getDocumentoIdentidad());
+        existing.setNacionalidad(refugiadoDetails.getNacionalidad());
+        existing.setIdioma(refugiadoDetails.getIdioma());
+        existing.setEstatusLegal(refugiadoDetails.getEstatusLegal());
+
+        Refugiado updated = refugiadoService.crearRefugiado(existing);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
@@ -60,21 +71,45 @@ public class RefugiadoController {
         return ResponseEntity.noContent().build();
     }
 
-    private RefugiadoDTO toDTO(Refugiado ref) {
-        RefugiadoDTO dto = new RefugiadoDTO();
-        dto.setRefugiadoNumero(ref.getRefugiadoNumero());
-        dto.setNacionalidad(ref.getNacionalidad());
-        dto.setIdioma(ref.getIdioma());
-        dto.setEstatusLegal(ref.getEstatusLegal());
-        return dto;
-    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<Refugiado> patchRefugiado(@PathVariable Long id, @RequestBody java.util.Map<String, Object> updates) {
+        Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
+        if (optionalExisting.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Refugiado existing = optionalExisting.get();
 
-    private Refugiado toEntity(RefugiadoDTO dto) {
-        Refugiado ref = new Refugiado();
-        ref.setRefugiadoNumero(dto.getRefugiadoNumero());
-        ref.setNacionalidad(dto.getNacionalidad());
-        ref.setIdioma(dto.getIdioma());
-        ref.setEstatusLegal(dto.getEstatusLegal());
-        return ref;
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "nombre":
+                    existing.setNombre((String) value);
+                    break;
+                case "apellidos":
+                    existing.setApellidos((String) value);
+                    break;
+                case "email":
+                    existing.setEmail((String) value);
+                    break;
+                case "telefono":
+                    existing.setTelefono((String) value);
+                    break;
+                case "documentoIdentidad":
+                    existing.setDocumentoIdentidad((String) value);
+                    break;
+                case "nacionalidad":
+                    existing.setNacionalidad((String) value);
+                    break;
+                case "idioma":
+                    existing.setIdioma((String) value);
+                    break;
+                case "estatusLegal":
+                    existing.setEstatusLegal(Enum.valueOf(com.example.espainour.model.EstatusLegal.class, (String) value));
+                    break;
+                // NO se cambia refugiadoNumero ni genero
+            }
+        });
+
+        Refugiado updated = refugiadoService.crearRefugiado(existing);
+        return ResponseEntity.ok(updated);
     }
 }

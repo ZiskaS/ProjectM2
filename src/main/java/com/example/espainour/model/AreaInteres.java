@@ -10,5 +10,5 @@ public enum AreaInteres {
     TRADUCCION,
     SOCIALMEDIA,
     EVENTMANAGER,
-    EVENTS
+    EVENTOS
 }

@@ -17,6 +17,10 @@ public abstract class Usuario {
     private String email;
     private String telefono;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Genero genero;
+
     @Column(nullable = false, unique = true)
     private String documentoIdentidad;
 
@@ -28,7 +32,7 @@ public abstract class Usuario {
         this.fechaRegistro = LocalDateTime.now();
     }
 
-    // Getter und Setter
+    // --- Getters y Setters ---
 
     public Long getId() {
         return id;
@@ -70,6 +74,14 @@ public abstract class Usuario {
         this.telefono = telefono;
     }
 
+    public Genero getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Genero genero) {
+        this.genero = genero;
+    }
+
     public String getDocumentoIdentidad() {
         return documentoIdentidad;
     }
@@ -86,3 +98,4 @@ public abstract class Usuario {
         this.fechaRegistro = fechaRegistro;
     }
 }
+

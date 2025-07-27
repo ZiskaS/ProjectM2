@@ -29,7 +29,8 @@ public class RefugiadoService {
 
     @Transactional
     public Refugiado crearRefugiado(Refugiado refugiado) {
-        if (refugiado.getId() == null) {
+        // Cambiado para comprobar refugiadoNumero en lugar de id
+        if (refugiado.getRefugiadoNumero() == null) {
             Long maxNumero = refugiadoRepository.findMaxRefugiadoNumero();
             if (maxNumero == null) {
                 maxNumero = 0L;
@@ -41,5 +42,9 @@ public class RefugiadoService {
 
     public void deleteById(Long id) {
         refugiadoRepository.deleteById(id);
+    }
+
+    public Optional<Refugiado> findByRefugiadoNumero(Long refugiadoNumero) {
+        return refugiadoRepository.findByRefugiadoNumero(refugiadoNumero);
     }
 }

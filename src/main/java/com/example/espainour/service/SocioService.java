@@ -42,4 +42,9 @@ public class SocioService {
     public void deleteById(Long id) {
         socioRepository.deleteById(id);
     }
+
+    public Optional<Socio> findBySocioNumero(Long socioNumero) {
+        return socioRepository.findBySocioNumero(socioNumero);
+    }
+
 }

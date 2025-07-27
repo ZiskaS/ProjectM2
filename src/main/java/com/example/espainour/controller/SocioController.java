@@ -1,15 +1,15 @@
 package com.example.espainour.controller;
 
-import com.example.espainour.dto.SocioDTO;
 import com.example.espainour.model.Socio;
+import com.example.espainour.model.TipoSocio;
 import com.example.espainour.service.SocioService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/socios")
@@ -17,41 +17,92 @@ public class SocioController {
 
     private final SocioService socioService;
 
-    @Autowired
     public SocioController(SocioService socioService) {
         this.socioService = socioService;
     }
 
     @GetMapping
-    public ResponseEntity<List<SocioDTO>> getAllSocios() {
-        List<Socio> socios = socioService.findAll();
-        List<SocioDTO> dtos = socios.stream().map(this::toDTO).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public List<Socio> getAllSocios() {
+        return socioService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SocioDTO> getSocioById(@PathVariable Long id) {
+    public ResponseEntity<Socio> getSocioById(@PathVariable Long id) {
         return socioService.findById(id)
-                .map(socio -> ResponseEntity.ok(toDTO(socio)))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<SocioDTO> createSocio(@Valid @RequestBody SocioDTO socioDTO) {
-        Socio socio = toEntity(socioDTO);
-        Socio saved = socioService.crearSocio(socio);
-        return ResponseEntity.ok(toDTO(saved));
+    public Socio createSocio(@RequestBody Socio socio) {
+        return socioService.crearSocio(socio);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SocioDTO> updateSocio(@PathVariable Long id, @Valid @RequestBody SocioDTO socioDTO) {
-        return socioService.findById(id).map(existing -> {
-            existing.setCuotaMensual(socioDTO.getCuotaMensual());
-            existing.setTipoSocio(socioDTO.getTipoSocio());
-            existing.setFechaPago(socioDTO.getFechaPago());
+    public ResponseEntity<Socio> updateSocio(@PathVariable Long id, @RequestBody Socio socioDetails) {
+        Optional<Socio> optionalExisting = socioService.findById(id);
 
+        if (optionalExisting.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Socio existing = optionalExisting.get();
+
+        // Validar que socioNumero no cambie
+        if (!existing.getSocioNumero().equals(socioDetails.getSocioNumero())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Actualizar campos permitidos
+        existing.setNombre(socioDetails.getNombre());
+        existing.setApellidos(socioDetails.getApellidos());
+        existing.setEmail(socioDetails.getEmail());
+        existing.setTelefono(socioDetails.getTelefono());
+        existing.setDocumentoIdentidad(socioDetails.getDocumentoIdentidad());
+        existing.setCuotaMensual(socioDetails.getCuotaMensual());
+        existing.setTipoSocio(socioDetails.getTipoSocio());
+        existing.setFechaPago(socioDetails.getFechaPago());
+
+        // El campo genero no se toca aquí, se mantiene igual
+
+        Socio updated = socioService.crearSocio(existing);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Socio> patchSocio(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        return socioService.findById(id).map(existing -> {
+            updates.forEach((key, value) -> {
+                switch (key) {
+                    case "nombre":
+                        existing.setNombre((String) value);
+                        break;
+                    case "apellidos":
+                        existing.setApellidos((String) value);
+                        break;
+                    case "email":
+                        existing.setEmail((String) value);
+                        break;
+                    case "telefono":
+                        existing.setTelefono((String) value);
+                        break;
+                    case "documentoIdentidad":
+                        existing.setDocumentoIdentidad((String) value);
+                        break;
+                    case "cuotaMensual":
+                        existing.setCuotaMensual(Double.valueOf(value.toString()));
+                        break;
+                    case "tipoSocio":
+                        existing.setTipoSocio(TipoSocio.valueOf(value.toString()));
+                        break;
+                    case "fechaPago":
+                        existing.setFechaPago(LocalDate.parse(value.toString()));
+                        break;
+                    // socioNumero y genero no se pueden cambiar aquí
+                }
+            });
             Socio updated = socioService.crearSocio(existing);
-            return ResponseEntity.ok(toDTO(updated));
+            return ResponseEntity.ok(updated);
         }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -59,23 +110,5 @@ public class SocioController {
     public ResponseEntity<Void> deleteSocio(@PathVariable Long id) {
         socioService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private SocioDTO toDTO(Socio socio) {
-        SocioDTO dto = new SocioDTO();
-        dto.setSocioNumero(socio.getSocioNumero());
-        dto.setCuotaMensual(socio.getCuotaMensual());
-        dto.setTipoSocio(socio.getTipoSocio());
-        dto.setFechaPago(socio.getFechaPago());
-        return dto;
-    }
-
-    private Socio toEntity(SocioDTO dto) {
-        Socio socio = new Socio();
-        socio.setSocioNumero(dto.getSocioNumero());
-        socio.setCuotaMensual(dto.getCuotaMensual());
-        socio.setTipoSocio(dto.getTipoSocio());
-        socio.setFechaPago(dto.getFechaPago());
-        return socio;
     }
 }
