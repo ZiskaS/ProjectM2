@@ -48,7 +48,7 @@ public class DataLoader {
             socioRepo.save(socio1);
             socioRepo.save(socio2);
 
-            // --- REFUGIADOS (Palestinos) ---
+            // --- REFUGIADOS ---
             Refugiado ref1 = new Refugiado();
             ref1.setNombre("Fatima");
             ref1.setApellidos("Khalil");

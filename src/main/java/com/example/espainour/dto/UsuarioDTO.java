@@ -12,10 +12,8 @@ public class UsuarioDTO {
     private String telefono;
     private Genero genero; // ← NUEVO CAMPO
 
-    // Constructor vacío
     public UsuarioDTO() {}
 
-    // Constructor con género incluido
     public UsuarioDTO(Long id, String tipoUsuario, String nombre, String apellidos, String email, String telefono, Genero genero) {
         this.id = id;
         this.tipoUsuario = tipoUsuario;
@@ -27,7 +25,6 @@ public class UsuarioDTO {
     }
 
     // Getters y setters
-
     public Long getId() {
         return id;
     }

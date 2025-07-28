@@ -1,12 +1,15 @@
 package com.example.espainour.controller;
 
+import com.example.espainour.dto.RefugiadoDTO;
 import com.example.espainour.model.Refugiado;
 import com.example.espainour.service.RefugiadoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/refugiados")
@@ -18,26 +21,59 @@ public class RefugiadoController {
         this.refugiadoService = refugiadoService;
     }
 
+    private RefugiadoDTO toDTO(Refugiado r) {
+        RefugiadoDTO dto = new RefugiadoDTO();
+        dto.setId(r.getId());
+        dto.setRefugiadoNumero(r.getRefugiadoNumero());
+        dto.setNombre(r.getNombre());
+        dto.setApellidos(r.getApellidos());
+        dto.setEmail(r.getEmail());
+        dto.setTelefono(r.getTelefono());
+        dto.setDocumentoIdentidad(r.getDocumentoIdentidad());
+        dto.setNacionalidad(r.getNacionalidad());
+        dto.setIdioma(r.getIdioma());
+        dto.setEstatusLegal(r.getEstatusLegal());
+        dto.setFechaRegistro(r.getFechaRegistro());
+        return dto;
+    }
+
+    private Refugiado toEntity(RefugiadoDTO dto) {
+        Refugiado r = new Refugiado();
+        r.setId(dto.getId());
+        r.setRefugiadoNumero(dto.getRefugiadoNumero());
+        r.setNombre(dto.getNombre());
+        r.setApellidos(dto.getApellidos());
+        r.setEmail(dto.getEmail());
+        r.setTelefono(dto.getTelefono());
+        r.setDocumentoIdentidad(dto.getDocumentoIdentidad());
+        r.setNacionalidad(dto.getNacionalidad());
+        r.setIdioma(dto.getIdioma());
+        r.setEstatusLegal(dto.getEstatusLegal());
+        return r;
+    }
+
     @GetMapping
-    public List<Refugiado> getAllRefugiados() {
-        return refugiadoService.findAll();
+    public List<RefugiadoDTO> getAllRefugiados() {
+        List<Refugiado> refugiados = refugiadoService.findAll();
+        return refugiados.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Refugiado> getRefugiadoById(@PathVariable Long id) {
+    public ResponseEntity<RefugiadoDTO> getRefugiadoById(@PathVariable Long id) {
         Optional<Refugiado> opt = refugiadoService.findById(id);
-        return opt.map(ResponseEntity::ok)
+        return opt.map(ref -> ResponseEntity.ok(toDTO(ref)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Refugiado> createRefugiado(@RequestBody Refugiado refugiado) {
+    public ResponseEntity<RefugiadoDTO> createRefugiado(@Valid @RequestBody RefugiadoDTO refugiadoDTO) {
+        Refugiado refugiado = toEntity(refugiadoDTO);
         Refugiado saved = refugiadoService.crearRefugiado(refugiado);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(toDTO(saved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Refugiado> updateRefugiado(@PathVariable Long id, @RequestBody Refugiado refugiadoDetails) {
+    public ResponseEntity<RefugiadoDTO> updateRefugiado(@PathVariable Long id, @Valid @RequestBody RefugiadoDTO refugiadoDTO) {
         Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
         if (optionalExisting.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -46,23 +82,23 @@ public class RefugiadoController {
         Refugiado existing = optionalExisting.get();
 
         // No permitimos cambiar refugiadoNumero
-        if (refugiadoDetails.getRefugiadoNumero() != null &&
-                !existing.getRefugiadoNumero().equals(refugiadoDetails.getRefugiadoNumero())) {
+        if (refugiadoDTO.getRefugiadoNumero() != null &&
+                !existing.getRefugiadoNumero().equals(refugiadoDTO.getRefugiadoNumero())) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Actualizamos todos los campos permitidos excepto genero y refugiadoNumero
-        existing.setNombre(refugiadoDetails.getNombre());
-        existing.setApellidos(refugiadoDetails.getApellidos());
-        existing.setEmail(refugiadoDetails.getEmail());
-        existing.setTelefono(refugiadoDetails.getTelefono());
-        existing.setDocumentoIdentidad(refugiadoDetails.getDocumentoIdentidad());
-        existing.setNacionalidad(refugiadoDetails.getNacionalidad());
-        existing.setIdioma(refugiadoDetails.getIdioma());
-        existing.setEstatusLegal(refugiadoDetails.getEstatusLegal());
+        // Actualizamos campos excepto refugiadoNumero y genero
+        existing.setNombre(refugiadoDTO.getNombre());
+        existing.setApellidos(refugiadoDTO.getApellidos());
+        existing.setEmail(refugiadoDTO.getEmail());
+        existing.setTelefono(refugiadoDTO.getTelefono());
+        existing.setDocumentoIdentidad(refugiadoDTO.getDocumentoIdentidad());
+        existing.setNacionalidad(refugiadoDTO.getNacionalidad());
+        existing.setIdioma(refugiadoDTO.getIdioma());
+        existing.setEstatusLegal(refugiadoDTO.getEstatusLegal());
 
         Refugiado updated = refugiadoService.crearRefugiado(existing);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(toDTO(updated));
     }
 
     @DeleteMapping("/{id}")
@@ -72,7 +108,7 @@ public class RefugiadoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Refugiado> patchRefugiado(@PathVariable Long id, @RequestBody java.util.Map<String, Object> updates) {
+    public ResponseEntity<RefugiadoDTO> patchRefugiado(@PathVariable Long id, @RequestBody java.util.Map<String, Object> updates) {
         Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
         if (optionalExisting.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -110,6 +146,6 @@ public class RefugiadoController {
         });
 
         Refugiado updated = refugiadoService.crearRefugiado(existing);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(toDTO(updated));
     }
 }

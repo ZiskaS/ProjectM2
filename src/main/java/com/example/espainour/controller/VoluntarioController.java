@@ -45,7 +45,6 @@ public class VoluntarioController {
 
         Voluntario existing = optionalExisting.get();
 
-        // Verificar que voluntarioNumero no cambie
         if (!existing.getVoluntarioNumero().equals(voluntarioDetails.getVoluntarioNumero())) {
             return ResponseEntity.badRequest().build();
         }

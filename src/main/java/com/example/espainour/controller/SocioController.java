@@ -53,7 +53,6 @@ public class SocioController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Actualizar campos permitidos
         existing.setNombre(socioDetails.getNombre());
         existing.setApellidos(socioDetails.getApellidos());
         existing.setEmail(socioDetails.getEmail());
@@ -62,8 +61,6 @@ public class SocioController {
         existing.setCuotaMensual(socioDetails.getCuotaMensual());
         existing.setTipoSocio(socioDetails.getTipoSocio());
         existing.setFechaPago(socioDetails.getFechaPago());
-
-        // El campo genero no se toca aquí, se mantiene igual
 
         Socio updated = socioService.crearSocio(existing);
         return ResponseEntity.ok(updated);

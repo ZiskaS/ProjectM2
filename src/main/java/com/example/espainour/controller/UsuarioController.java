@@ -19,7 +19,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    // Obtener todos los usuarios con genero incluido
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> getTodosUsuarios() {
         List<UsuarioDTO> usuarios = usuarioService.getTodosUsuarios();

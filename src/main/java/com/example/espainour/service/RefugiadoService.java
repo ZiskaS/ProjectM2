@@ -29,7 +29,6 @@ public class RefugiadoService {
 
     @Transactional
     public Refugiado crearRefugiado(Refugiado refugiado) {
-        // Cambiado para comprobar refugiadoNumero en lugar de id
         if (refugiado.getRefugiadoNumero() == null) {
             Long maxNumero = refugiadoRepository.findMaxRefugiadoNumero();
             if (maxNumero == null) {

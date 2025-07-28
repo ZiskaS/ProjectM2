@@ -21,7 +21,6 @@ public class Refugiado extends Usuario {
     private EstatusLegal estatusLegal;
 
     // --- Getter & Setter ---
-
     public Long getRefugiadoNumero() {
         return refugiadoNumero;
     }
