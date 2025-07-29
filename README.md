@@ -50,16 +50,16 @@ sql
 3. Configura application.properties:
 
    
-properties
-Configuración de la conexión a la base de datos
+# Configuración de la conexión a la base de datos
 spring.datasource.url=jdbc:mysql://localhost:3314/demo?createDatabaseIfNotExist=true
 spring.datasource.username=root
 spring.datasource.password=ironhack
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-Configuración JPA/Hibernate
+# Configuración JPA/Hibernate
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
 
 
 4. Ejecuta la aplicación:
