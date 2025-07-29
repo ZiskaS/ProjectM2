@@ -135,7 +135,7 @@ La autenticación con JWT y Spring Security está preparada y puede ser añadida
 
 ## 📎 Enlaces Útiles
 
-* [Presentación del Proyecto (https://www.canva.com/design/DAGukgtPFaI/Yd5PXOPt1E5wOmPJyGxiow/edit?utm_content=DAGukgtPFaI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+* [Presentación del Proyecto] (https://www.canva.com/design/DAGukgtPFaI/Yd5PXOPt1E5wOmPJyGxiow/edit?utm_content=DAGukgtPFaI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ---
 
