@@ -1,18 +1,14 @@
 package com.example.espainour.dto;
 
 import com.example.espainour.model.EstatusLegal;
-
+import com.example.espainour.model.Genero;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class RefugiadoDTO {
 
-    // El id real de la base de datos
     private Long id;
-
-    // El número se asigna automáticamente, no es obligatorio al crear
     private Long refugiadoNumero;
 
     @NotBlank(message = "Nacionalidad es obligatoria")
@@ -23,6 +19,9 @@ public class RefugiadoDTO {
 
     @NotNull(message = "Estatus legal es obligatorio")
     private EstatusLegal estatusLegal;
+
+    @NotNull(message = "Género es obligatorio")
+    private Genero genero;
 
     @NotBlank(message = "Nombre es obligatorio")
     private String nombre;
@@ -43,10 +42,7 @@ public class RefugiadoDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime fechaRegistro;
 
-    public RefugiadoDTO() {
-    }
-
-    // --- Getters y Setters ---
+    public RefugiadoDTO() {}
 
     public Long getId() {
         return id;
@@ -86,6 +82,14 @@ public class RefugiadoDTO {
 
     public void setEstatusLegal(EstatusLegal estatusLegal) {
         this.estatusLegal = estatusLegal;
+    }
+
+    public Genero getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Genero genero) {
+        this.genero = genero;
     }
 
     public String getNombre() {
@@ -132,7 +136,6 @@ public class RefugiadoDTO {
         return fechaRegistro;
     }
 
-    // Añadido setter para uso interno en el servidor (no será expuesto en requests)
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }

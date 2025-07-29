@@ -15,6 +15,7 @@ public class Socio extends Usuario {
 
     private LocalDate fechaPago;
 
+    // Tipo de socio (por ejemplo: mensual, anual, donante especial, etc.)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoSocio tipoSocio;

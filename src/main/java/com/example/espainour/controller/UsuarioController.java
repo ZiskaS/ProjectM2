@@ -19,12 +19,16 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    // GET /api/usuarios - Devuelve la lista de todos los usuarios como DTOs
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> getTodosUsuarios() {
         List<UsuarioDTO> usuarios = usuarioService.getTodosUsuarios();
         return ResponseEntity.ok(usuarios);
     }
 
+    // DELETE /api/usuarios/{id} - Elimina un usuario por su ID
+    // Responde con 204 No Content si se eliminó correctamente
+    // Responde con 404 Not Found si no existe el usuario
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         boolean eliminado = usuarioService.deleteById(id);
@@ -36,3 +40,4 @@ public class UsuarioController {
     }
 
 }
+

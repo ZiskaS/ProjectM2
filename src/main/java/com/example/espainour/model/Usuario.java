@@ -28,6 +28,7 @@ public abstract class Usuario {
     private LocalDateTime fechaRegistro;
 
     @PrePersist
+    // Establece la fecha de registro automáticamente al guardar el usuario por primera vez
     protected void onCreate() {
         this.fechaRegistro = LocalDateTime.now();
     }

@@ -18,6 +18,7 @@ public class Voluntario extends Usuario {
     @Enumerated(EnumType.STRING)
     private TipoJornada tipoJornada;
 
+    // Lista de horarios disponibles para el voluntario (valores tipo Enum)
     @ElementCollection(targetClass = HorarioDisponibilidad.class)
     @CollectionTable(name = "voluntario_horarios", joinColumns = @JoinColumn(name = "voluntario_id"))
     @Enumerated(EnumType.STRING)

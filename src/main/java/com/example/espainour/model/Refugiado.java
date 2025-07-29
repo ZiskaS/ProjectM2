@@ -16,6 +16,7 @@ public class Refugiado extends Usuario {
     @Column
     private String idioma;
 
+    // Estatus legal del refugiado (por ejemplo: solicitud en trámite, aprobado, denegado)
     @Enumerated(EnumType.STRING)
     @Column(name = "estatus_legal", nullable = false)
     private EstatusLegal estatusLegal;

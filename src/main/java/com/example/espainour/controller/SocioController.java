@@ -21,11 +21,13 @@ public class SocioController {
         this.socioService = socioService;
     }
 
+    // GET /api/socios - Devuelve todos los socios
     @GetMapping
     public List<Socio> getAllSocios() {
         return socioService.findAll();
     }
 
+    // GET /api/socios/{id} - Devuelve un socio por ID
     @GetMapping("/{id}")
     public ResponseEntity<Socio> getSocioById(@PathVariable Long id) {
         return socioService.findById(id)
@@ -33,11 +35,13 @@ public class SocioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // POST /api/socios - Crea un nuevo socio
     @PostMapping
     public Socio createSocio(@RequestBody Socio socio) {
         return socioService.crearSocio(socio);
     }
 
+    // PUT /api/socios/{id} - Actualiza todos los campos permitidos del socio
     @PutMapping("/{id}")
     public ResponseEntity<Socio> updateSocio(@PathVariable Long id, @RequestBody Socio socioDetails) {
         Optional<Socio> optionalExisting = socioService.findById(id);
@@ -48,7 +52,7 @@ public class SocioController {
 
         Socio existing = optionalExisting.get();
 
-        // Validar que socioNumero no cambie
+        // El número de socio no se puede modificar
         if (!existing.getSocioNumero().equals(socioDetails.getSocioNumero())) {
             return ResponseEntity.badRequest().build();
         }
@@ -66,6 +70,7 @@ public class SocioController {
         return ResponseEntity.ok(updated);
     }
 
+    // PATCH /api/socios/{id} - Modificación parcial de campos permitidos
     @PatchMapping("/{id}")
     public ResponseEntity<Socio> patchSocio(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return socioService.findById(id).map(existing -> {
@@ -95,7 +100,7 @@ public class SocioController {
                     case "fechaPago":
                         existing.setFechaPago(LocalDate.parse(value.toString()));
                         break;
-                    // socioNumero y genero no se pueden cambiar aquí
+                    // socioNumero y genero no se deben modificar mediante PATCH
                 }
             });
             Socio updated = socioService.crearSocio(existing);
@@ -103,6 +108,7 @@ public class SocioController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // DELETE /api/socios/{id} - Elimina un socio por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSocio(@PathVariable Long id) {
         socioService.deleteById(id);

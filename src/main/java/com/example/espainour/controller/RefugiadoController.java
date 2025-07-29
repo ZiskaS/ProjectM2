@@ -2,6 +2,7 @@ package com.example.espainour.controller;
 
 import com.example.espainour.dto.RefugiadoDTO;
 import com.example.espainour.model.Refugiado;
+import com.example.espainour.model.EstatusLegal;
 import com.example.espainour.service.RefugiadoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class RefugiadoController {
         this.refugiadoService = refugiadoService;
     }
 
+    // Convierte una entidad Refugiado en su DTO correspondiente
     private RefugiadoDTO toDTO(Refugiado r) {
         RefugiadoDTO dto = new RefugiadoDTO();
         dto.setId(r.getId());
@@ -33,10 +35,12 @@ public class RefugiadoController {
         dto.setNacionalidad(r.getNacionalidad());
         dto.setIdioma(r.getIdioma());
         dto.setEstatusLegal(r.getEstatusLegal());
+        dto.setGenero(r.getGenero());
         dto.setFechaRegistro(r.getFechaRegistro());
         return dto;
     }
 
+    // Convierte un DTO en una entidad Refugiado para persistencia
     private Refugiado toEntity(RefugiadoDTO dto) {
         Refugiado r = new Refugiado();
         r.setId(dto.getId());
@@ -49,15 +53,18 @@ public class RefugiadoController {
         r.setNacionalidad(dto.getNacionalidad());
         r.setIdioma(dto.getIdioma());
         r.setEstatusLegal(dto.getEstatusLegal());
+        r.setGenero(dto.getGenero());
         return r;
     }
 
+    // GET /api/refugiados - Obtiene todos los refugiados
     @GetMapping
     public List<RefugiadoDTO> getAllRefugiados() {
         List<Refugiado> refugiados = refugiadoService.findAll();
         return refugiados.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    // GET /api/refugiados/{id} - Devuelve un refugiado por ID
     @GetMapping("/{id}")
     public ResponseEntity<RefugiadoDTO> getRefugiadoById(@PathVariable Long id) {
         Optional<Refugiado> opt = refugiadoService.findById(id);
@@ -65,6 +72,7 @@ public class RefugiadoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // POST /api/refugiados - Crea un nuevo refugiado
     @PostMapping
     public ResponseEntity<RefugiadoDTO> createRefugiado(@Valid @RequestBody RefugiadoDTO refugiadoDTO) {
         Refugiado refugiado = toEntity(refugiadoDTO);
@@ -72,6 +80,7 @@ public class RefugiadoController {
         return ResponseEntity.ok(toDTO(saved));
     }
 
+    // PUT /api/refugiados/{id} - Actualiza un refugiado completo
     @PutMapping("/{id}")
     public ResponseEntity<RefugiadoDTO> updateRefugiado(@PathVariable Long id, @Valid @RequestBody RefugiadoDTO refugiadoDTO) {
         Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
@@ -81,13 +90,12 @@ public class RefugiadoController {
 
         Refugiado existing = optionalExisting.get();
 
-        // No permitimos cambiar refugiadoNumero
+        // No se permite cambiar el número de refugiado
         if (refugiadoDTO.getRefugiadoNumero() != null &&
                 !existing.getRefugiadoNumero().equals(refugiadoDTO.getRefugiadoNumero())) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Actualizamos campos excepto refugiadoNumero y genero
         existing.setNombre(refugiadoDTO.getNombre());
         existing.setApellidos(refugiadoDTO.getApellidos());
         existing.setEmail(refugiadoDTO.getEmail());
@@ -101,12 +109,14 @@ public class RefugiadoController {
         return ResponseEntity.ok(toDTO(updated));
     }
 
+    // DELETE /api/refugiados/{id} - Elimina un refugiado por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRefugiado(@PathVariable Long id) {
         refugiadoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    // PATCH /api/refugiados/{id} - Actualiza parcialmente un refugiado
     @PatchMapping("/{id}")
     public ResponseEntity<RefugiadoDTO> patchRefugiado(@PathVariable Long id, @RequestBody java.util.Map<String, Object> updates) {
         Optional<Refugiado> optionalExisting = refugiadoService.findById(id);
@@ -115,6 +125,7 @@ public class RefugiadoController {
         }
         Refugiado existing = optionalExisting.get();
 
+        // Aplica solo los campos que vienen en la petición
         updates.forEach((key, value) -> {
             switch (key) {
                 case "nombre":
@@ -139,9 +150,8 @@ public class RefugiadoController {
                     existing.setIdioma((String) value);
                     break;
                 case "estatusLegal":
-                    existing.setEstatusLegal(Enum.valueOf(com.example.espainour.model.EstatusLegal.class, (String) value));
+                    existing.setEstatusLegal(EstatusLegal.valueOf((String) value));
                     break;
-                // NO se cambia refugiadoNumero ni genero
             }
         });
 
@@ -149,3 +159,4 @@ public class RefugiadoController {
         return ResponseEntity.ok(toDTO(updated));
     }
 }
+
