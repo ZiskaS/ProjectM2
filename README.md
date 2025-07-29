@@ -44,9 +44,9 @@ cd ProjectM2
 2. Crea la base de datos en MySQL:
 
    
-sql
+```sql
    CREATE DATABASE espainour_db;
-
+```
 
 3. Configura application.properties:
 
