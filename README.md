@@ -35,7 +35,7 @@ Se aplica la estrategia JOINED de JPA para la herencia, lo que garantiza una est
 
    
 bash
-   git clone https://github.com/tu-usuario/espainour.git
+   
    cd espainour
 
 
