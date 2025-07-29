@@ -51,11 +51,15 @@ sql
 
    
 properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/espainour_db
-   spring.datasource.username=root
-   spring.datasource.password=tu_contraseña
-   spring.jpa.hibernate.ddl-auto=update
-   spring.jpa.show-sql=true
+# Configuración de la conexión a la base de datos
+spring.datasource.url=jdbc:mysql://localhost:3314/demo?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=ironhack
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# Configuración JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 
 
 4. Ejecuta la aplicación:
@@ -121,23 +125,22 @@ La autenticación con JWT y Spring Security está preparada y puede ser añadida
 
 * Registro de usuarios con roles diferenciados y login con JWT.
 * Portal web con React para voluntarios, refugiados y socios.
+* Incorporación del rol Donante, permitiendo realizar donaciones directamente desde la aplicación.
+* Portal para socios con acceso a cuenta online personal, donde puedan gestionar sus datos y consultar un historial de sus actividades y colaboraciones.
 * Envío de notificaciones por email.
 * Integración con servicios externos para validación de identidad.
-* Despliegue automático con GitHub Actions.
 
 ---
 
 ## 📎 Enlaces Útiles
 
 * [Presentación del Proyecto (Google Slides)](https://docs.google.com/presentation/d/...)
-* [Tablero Trello de Gestión](https://trello.com/b/...)
 
 ---
 
 ## 👥 Equipo de Desarrollo
 
-* \[Tu Nombre]
-* \[Otros miembros si los hay]
+* \Franziska Stude
 
 ---
 
