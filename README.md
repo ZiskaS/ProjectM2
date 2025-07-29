@@ -141,7 +141,7 @@ La autenticación con JWT y Spring Security está preparada y puede ser añadida
 
 ## 👥 Equipo de Desarrollo
 
-* \Franziska Stude
+* Franziska Stude
 
 ---
 
