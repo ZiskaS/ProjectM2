@@ -34,9 +34,10 @@ Se aplica la estrategia JOINED de JPA para la herencia, lo que garantiza una est
 1. Clona el repositorio:
 
    
-bash
-   
-   cd espainour
+```bash
+git clone https://github.com/ZiskaS/ProjectM2.git
+cd ProjectM2
+
 
 
 2. Crea la base de datos en MySQL:
