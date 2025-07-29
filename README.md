@@ -34,7 +34,7 @@ Se aplica la estrategia JOINED de JPA para la herencia, lo que garantiza una est
 1. Clona el repositorio:
 
    
-```bash
+bash
 git clone https://github.com/ZiskaS/ProjectM2.git
 cd ProjectM2
 
